@@ -1,0 +1,269 @@
+伤害计算 <br>
+
+<form onchange="calculate()">
+
+    白字 =  <input id="ack-row" disabled value="1000">  = 
+                    人物 <input type="number" id="ack-row-man" value="1000" onchange="get_ack_row()"> +                                        
+                    武器 <input type="number" id="ack-row-weapon" value="0" onchange="get_ack_row()">
+    <br>
+    <script>  
+    function get_ack_row(){
+        let ack_row_man = document.getElementById('ack-row-man').value  ;
+        let ack_row_weapon = document.getElementById('ack-row-weapon').value ;
+        document.getElementById('ack-row').value = Number(ack_row_man) + Number(ack_row_weapon); 
+    }
+    </script>
+
+    攻击加成 = <input id="ack-buff" disabled value="0">  = 
+                    % <input type="number" id="ack-item-percent" value="0" onchange="get_ack_buff()"> + 
+                    定值 <input type="number" id="ack-item-num" value="0" onchange="get_ack_buff()"> + 
+                    其他% <input type="number" id="ack-other-percent" value="0" onchange="get_ack_buff()">
+    <br> 
+    <script>
+    function get_ack_buff(){
+        let ack_item_percent = document.getElementById('ack-item-percent').value  ;
+        let ack_item_num = document.getElementById('ack-item-num').value ;  
+        let ack_other_percent = document.getElementById('ack-other-percent').value  ;
+
+        let ack_row = document.getElementById('ack-row').value  ;
+        let ack_percent = Number(ack_item_percent) + Number(ack_other_percent); 
+        document.getElementById('ack-buff').value = Number(ack_item_num) + ack_row * (ack_percent/100); 
+    }
+    </script>
+
+    暴击 = %<input id="crt" value="5">  <br> 
+    爆伤 = %<input id="cd" value="50">  <br>   
+
+    增伤 = %<input id="dmg_up" value="0" disabled> = 
+                遗器% <input type="number" id="dmg_up_item" value="0" onchange="get_dmg_up()"> + 
+                行迹% <input type="number" id="dmg_up_walk" value="0" onchange="get_dmg_up()"> + 
+                其他% <input type="number" id="dmg_up_other" value="0" onchange="get_dmg_up()">
+    <br> 
+    <script>
+    function get_dmg_up(){
+        let dmg_up_item = document.getElementById('dmg_up_item').value  ;
+        let dmg_up_walk = document.getElementById('dmg_up_walk').value ;  
+        let dmg_up_other = document.getElementById('dmg_up_other').value  ;
+        document.getElementById('dmg_up').value = Number(dmg_up_item) + Number(dmg_up_walk) + Number(dmg_up_other); 
+    }
+    </script>
+
+    易伤 = %<input id="ez_dmg" value="0">  <br>   
+
+    抗性 = <input id="resist" value="1">  <br>   
+
+    防御 = <input id="defense" value="0.47" disabled> = 
+                敌人等级 <input type="number" id="ememy_lv" value="90" onchange="sum_defense()"> + 
+                角色等级 <input type="number" id="my_lv" value="80" onchange="sum_defense()"> + 
+                减防% <input type="number" id="defense_down" value="0" onchange="sum_defense()"> 
+    <br> 
+    <script>
+    function sum_defense(){
+        let ememy_lv = document.getElementById('ememy_lv').value  ;
+        let my_lv = document.getElementById('my_lv').value ;  
+        let defense_down = document.getElementById('defense_down').value ;  
+        let ememy_defense = (ememy_lv*10+200) * (1 - defense_down/100) ; 
+        document.getElementById('defense').value = (my_lv*10+200)/(my_lv*10+200+ ememy_defense  ); 
+    }
+    </script>
+
+    其他独立乘区 = <input id="other" value="0">  <br>   
+
+    韧性 = %<input id="broken" value="90" disabled> = 
+                是否破韧<input id="is_broken" type="checkbox" onchange="sum_broken()" >   
+    <br> 
+    <script>
+    function sum_broken(){
+        let is_broken = document.getElementById('is_broken').checked ;
+        if(!is_broken)
+            document.getElementById('broken').value = 90; 
+        else 
+            document.getElementById('broken').value = 100; 
+    }
+    </script>
+
+    倍率 = %<input id="beilv" value="100">  <br>   
+
+</form>
+
+总攻击 = <input id="total_ack" value="0" disabled> <br> 
+期望伤害 = <input id="total_dmg" value="0" disabled> <br> 
+暴击伤害 = <input id="if_crit_dmg" value="0" disabled> <br> 
+<script> 
+function calculate(){
+    let ack = Number(document.getElementById('ack-row').value) + Number(document.getElementById('ack-buff').value) ;
+    document.getElementById('total_ack').value = ack; 
+    
+    let crt = document.getElementById('crt').value / 100 ; 
+    let cd = document.getElementById('cd').value / 100; 
+    let dmg_up = document.getElementById('dmg_up').value / 100; 
+    let ez_dmp = document.getElementById('ez_dmg').value / 100; 
+    let resist = document.getElementById('resist').value / 1; 
+    let __defense = document.getElementById('defense').value / 1; 
+    let other = document.getElementById('other').value / 1; 
+    let __broken = document.getElementById('broken').value / 100; 
+    let beilv = document.getElementById('beilv').value / 100; 
+    
+    document.getElementById('total_dmg').value = ack * (1 + crt*cd) * (1+dmg_up) * (1+ez_dmp) * (resist) * (__defense) * (1+other) * (__broken) * (beilv);
+
+    document.getElementById('if_crit_dmg').value = ack * (1 + 1*cd) * (1+dmg_up) * (1+ez_dmp) * (resist) * (__defense) * (1+other) * (__broken) * (beilv);
+}
+</script>
+
+<br> 
+<br> 
+<br> 
+<br> 
+
+
+击破计算  <br>  
+
+
+<form onchange="calculate_broken()">
+
+    等级基数 = <input id="lv_base" value="3700">  <br> 
+
+    韧性系数 =  <input id="broken_base" value="1" disabled>  
+            = 韧性条 <input id="broken_bar_len" value="2" onchange="get_broken_base(value)">
+    <br> 
+    <script>
+    function get_broken_base(value){
+        document.getElementById('broken_base').value = (value/1+2)/4  ; 
+    }
+    </script>
+
+
+    易伤 = %<input id="ez_dmg_broken" value="0">  <br>   
+
+    抗性 = <input id="resist_broken" value="1">  <br>   
+
+    防御 = <input id="defense_broken" value="0.47" disabled> = 
+                敌人等级 <input type="number" id="ememy_lv_broken" value="90" onchange="sum_defense_broken()"> + 
+                角色等级 <input type="number" id="my_lv_broken" value="80" onchange="sum_defense_broken()"> + 
+                减防% <input type="number" id="defense_down_broken" value="0" onchange="sum_defense_broken()"> 
+    <br> 
+    <script>
+    function sum_defense_broken(){
+        let ememy_lv = document.getElementById('ememy_lv_broken').value  ;
+        let my_lv = document.getElementById('my_lv_broken').value ;  
+        let defense_down = document.getElementById('defense_down_broken').value ;  
+        let ememy_defense = (ememy_lv*10+200) * (1 - defense_down/100) ; 
+        document.getElementById('defense_broken').value = (my_lv*10+200)/(my_lv*10+200+ ememy_defense  ); 
+    }
+    </script>
+
+    击破特攻 = %<input id="broken_special" value="0">  <br>   
+
+    击破倍率 = <input id="broken_beilv" disabled> 击破dot倍率 = <input id="broken_dot_beilv"  disabled>
+    <br> 
+    敌人血量 = <input id="ememy_hp" value="0"  >   是否精英 <input type="checkbox" id="is_elite" checked>
+    <br> 
+
+</form>
+
+
+<button type="checkbox" onclick="select_broken_type(0)"> 物理 </button>
+<button type="checkbox" onclick="select_broken_type(1)">冰  </button>
+<button type="checkbox" onclick="select_broken_type(2)"> 风 </button>
+<button  type="checkbox" onclick="select_broken_type(3)">雷 </button>
+<button  type="checkbox" onclick="select_broken_type(4)"> 火</button>
+<button  type="checkbox" onclick="select_broken_type(5)"> 量子</button>
+<br> 
+<script>
+function select_broken_type(index){
+    let broken_beilv = 0; 
+    let broken_dot_beilv = 0;
+    switch (index) {
+        case 0:
+            broken_beilv = '2a';
+            let ememy_hp = document.getElementById('ememy_hp').value / 1;
+            let is_elite = document.getElementById('is_elite').checked; 
+            let lv_base = document.getElementById('lv_base').value /1; 
+            let broken_base = document.getElementById('broken_base').value /1; 
+            let phy_broken_dot_limit = lv_base * 2 * broken_base  ;  
+            if (phy_broken_dot_limit < 0.07 * ememy_hp){
+                broken_dot_beilv = '2a' ;
+            } else{
+                if(is_elite){
+                    broken_dot_beilv = '7%';
+                }else{
+                    broken_dot_beilv = '16%';
+                }
+            }
+            break;
+    
+        case 1: 
+            broken_beilv = '1a';
+            broken_dot_beilv = '1'; 
+            break; 
+        
+        case 2:
+            broken_beilv = '1.5a';
+            broken_dot_beilv = '3'; 
+            break; 
+
+        case 3:
+            broken_beilv = '1a'; 
+            broken_dot_beilv = '2';
+            break;
+
+        case 4:
+            broken_beilv = '2a'; 
+            broken_dot_beilv = '1'; 
+            break; 
+
+        case 5:  
+            broken_beilv = '0.5a'; 
+            broken_dot_beilv = '3a';
+            break ;
+
+        default:
+            break;
+    }
+
+    document.getElementById('broken_beilv').value = broken_beilv ; 
+    document.getElementById('broken_dot_beilv').value = broken_dot_beilv ;    
+
+    calculate_broken(); 
+
+}
+</script>
+
+
+
+总伤害 = <input id="total_dmg_broken" value="0" disabled> 
+        =  击破伤害 <input id="broken_dmg" value="0" disabled> + dot <input id="broken_dot_dmg" value="0" disabled>
+
+<br> 
+<script> 
+function calculate_broken(){
+    let lv_base = Number(document.getElementById('lv_base').value) ; 
+    let broken_base = document.getElementById('broken_base').value / 1 ; 
+    let ez_dmg_broken = document.getElementById('ez_dmg_broken').value / 100; 
+    let resist_broken = document.getElementById('resist_broken').value / 1; 
+    let __defense_broken = document.getElementById('defense_broken').value / 1; 
+    let broken_special = document.getElementById('broken_special').value / 100; 
+
+    let broken_beilv = document.getElementById('broken_beilv').value ; 
+    broken_beilv = broken_beilv.slice(0,-1)/1 * broken_base ; 
+    let broken_dmg = lv_base * broken_beilv * (1+ez_dmg_broken) * (resist_broken) * (__defense_broken) * (1+broken_special) ;
+    document.getElementById('broken_dmg').value = broken_dmg; 
+
+    let broken_dot_beilv = document.getElementById('broken_dot_beilv').value ; 
+    let ememy_hp = document.getElementById('ememy_hp').value/1 ; 
+    let broken_dot_dmg = 0;
+    if(broken_dot_beilv.endsWith('%')){
+        broken_dot_dmg = ememy_hp * (broken_dot_beilv.slice(0,-1)/100) * (1+ez_dmg_broken) * (resist_broken) * (__defense_broken) * (1+broken_special) ; 
+    }else{
+        if(broken_dot_beilv.endsWith('a')){
+            broken_dot_beilv = broken_dot_beilv.slice(0,-1)/1 * broken_base ; 
+        }else{
+            broken_dot_beilv = broken_dot_beilv/1; 
+        }
+        broken_dot_dmg = lv_base * broken_dot_beilv * (1+ez_dmg_broken) * (resist_broken) * (__defense_broken) * (1+broken_special) ;
+    }
+    document.getElementById('broken_dot_dmg').value = broken_dot_dmg; 
+    
+    document.getElementById('total_dmg_broken').value = broken_dot_dmg + broken_dmg ; 
+}
+</script>
